@@ -1,6 +1,20 @@
 
+
+basic.honorifics <- function()
+{
+  m <- c("Mr"   ,"M",  
+         "Master","M", 
+         "Miss" ,"F",  
+         "Ms" ,"F",
+         "Mrs"  ,"F" , 
+         "Dr"  ,"N"  , 
+         "Prof" , "N")
+  m <- (matrix(m,length(m)/2,2,byrow = T)) 
+  return (transformTable(m))
+}
+
 getCategories <- function(myString,
-                          regex.table,
+                          regex.table = basic.honorifics(),
                           ignore.case = TRUE,
                           default = "U")
 {
