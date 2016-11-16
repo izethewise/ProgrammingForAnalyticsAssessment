@@ -1,10 +1,22 @@
 
-
-
-getCategory <- function(myString,
+getCategories <- function(myString,
                           regex.table,
                           ignore.case = TRUE,
                           default = "U")
+{
+  return (
+    as.character(lapply(myString, 
+                             function(x) 
+                               getCategory(x,regex.table,ignore.case,default)
+                             )
+                       )
+          )
+}
+
+getCategory <- function(myString,
+                        regex.table,
+                        ignore.case = TRUE,
+                        default = "U")
 {
   return.value <- default
   matched <- FALSE
