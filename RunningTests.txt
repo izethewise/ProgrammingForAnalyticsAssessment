@@ -1,0 +1,6 @@
+#if not installed
+install.packages("testthat")
+#then
+library(testthat)
+#if tests and code are in working directory
+t <- test_dir(".\\",reporter = "summary")
