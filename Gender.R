@@ -40,6 +40,11 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
   if (!length(a[duplicated(a)])==0) {
     stop("Error in getGender: honorifics must be unique.")
   }
+  #Raise an error if honorifics contain empty strings.
+  a <- trimws(honorifics)
+  if (!length(a[a==""])==0) {
+    stop("Error in getGender: honorifics must not contain empty strings.")
+  }
   
   #Convert matrix of honorifics and genders 
   # into matrix of genders and regular expressions
