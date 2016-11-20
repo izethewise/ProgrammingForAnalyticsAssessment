@@ -52,10 +52,7 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
   # Apply matchName function to name argument and return result.
   return (
     as.character(
-      sapply(
-        name, 
-        function(x) 
-          matchName(x, regex, ignore.case, default)
+      sapply(name, function(x) matchName(x, regex, ignore.case, default)
       )
     )
   )
@@ -193,9 +190,9 @@ transformTable <- function(honorifics)
   ret <- matrix(u, nrow=length(u), ncol=2)
   # Create list of honorifics for each gender code.
   x <- sapply(ret[, 2], function(x) h[h[, 2] == as.character(x), 1])
-  # Convert character vectors to regular expression.
+  # Convert list to regular expressions of honorifics.
   x <- sapply(x, function(x) mkExp(x))
-  # Set column 2 of return matrix to vector of regular expressions.
+  # Set column 2 of return matrix to regular expressions of honorifics.
   ret[,2] <- x
   return (ret)
 }
