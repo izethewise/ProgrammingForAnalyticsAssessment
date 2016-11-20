@@ -5,18 +5,17 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
   # Args:
   #   name: Character or factor variable of name being checked for gender.
   #   honorifics: Character matrix containing honorific and corresponding gender code.
-  #     Matrix format e.g.
+  #     Matrix format: E.g.
   #     Mr     M
   #     Master M
   #     Mrs    F
   #     Miss   F
   #     etc.
-  #     Default: see basic.honorifics function in this file
+  #     Default: see basic.honorifics function.
   #   ignore.case: If TRUE, mr or Mr will both return a match for Mr.
   #                If FALSE, mr will not return a match for Mr.
   #   default: If name cannot be matched, default is returned.
   #   
-  #
   # Returns:
   #   Where name can be matched to an entry in honorifics[,1] returns corresponding entry honorifics[,2] 
   #   else returns default.
@@ -64,7 +63,9 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
 
 basic.honorifics <- function()
 {
- # Returns basic honorific/gender code matrix for use in main getGender function
+ # Returns:
+ #  Basic honorific/gender code matrix for use in main getGender function
+  
   m <- c("Mr",    "M",  
          "Master","M", 
          "Miss",  "F",  
@@ -78,14 +79,21 @@ basic.honorifics <- function()
 
 matchName <- function(name, regex.table, ignore.case = TRUE, default)
 {
-  # Uses regular expressions to match name to gender code.
+  # Matches name to gender code using regular expressions.
   #
   # Args:
-  #   name: Character variable of name being checked for gender.
-  #   regex.table: Two column matrix: column 1 = gender code;
-  #                                   column 2 = regular expression with reg ex of honorifics
+  #   name: Character/factor variable of name being checked for gender.
+  #   regex.table: Two column matrix: 
+  #     E.g.
+  #     M   (^|[^A-Za-z])(Mr|Master)($|[^A-Za-z])
+  #     F   (^|[^A-Za-z])(Mrs|Miss)($|[^A-Za-z])
   #   ignore.case: See getGender.
   #   default: See getGender.
+  #
+  # Returns:
+  #   Where name can be matched to regex.table[,2] 
+  #     returns corresponding entry regex.table[,1]
+  #     else returns default.
   
   # Set return value to default argument.
   return.value <- default
@@ -116,16 +124,19 @@ transformTable <- function(honorifics)
 {
   # Transforms two column matrix of honorifics and gender code
   #   into two colum matrix of gender code and reg ex of honorific:
-  #   Mr      M
-  #   Master  M
-  #   Mrs     F
-  #   Miss    F
-  # Becomes:
-  #   M   (^|[^A-Za-z])(Mr|Master)($|[^A-Za-z])
-  #   F   (^|[^A-Za-z])(Mrs|Miss)($|[^A-Za-z])
   #
   # Args:
-  #   honorifics: See honorifics argument in getGender.
+  #   honorifics: 
+  #     E.g.
+  #     Mr      M
+  #     Master  M
+  #     Mrs     F
+  #     Miss    F
+  #
+  # Returns:
+  #   E.g.
+  #   M   (^|[^A-Za-z])(Mr|Master)($|[^A-Za-z])
+  #   F   (^|[^A-Za-z])(Mrs|Miss)($|[^A-Za-z])
   
   # Set local variable. 
   h <- honorifics
@@ -139,11 +150,11 @@ transformTable <- function(honorifics)
   # Convert lists of factors to lists of character vectors.
   x <- sapply(x, function(x)
     as.character(x))
-  # Convert character arrays to regular expression.
+  # Convert character vectors to regular expression.
   x <- sapply(x, function(x)
     mkExp(x))
-  # Convert factor to vector.
-  m[,2]<-unlist(x)
+  # Set column 2 of return matrix to vector of regular expressions.
+  m[,2] <- x
   return (m)
 }
 
@@ -155,6 +166,10 @@ mkExp <- function(x, pref = "(^|[^A-Za-z])", suff = "($|[^A-Za-z])")
   #   x: Character vector.
   #   pref: Prefix for regex.
   #   suff: Suffix for regex.
+  #
+  # Returns:
+  #   E.g.
+  #   (^|[^A-Za-z])(Mr|Master)($|[^A-Za-z])
   
   # Create '|' delimited string from character vector 
   #   and bookend with prefix and suffix.
