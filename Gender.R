@@ -24,8 +24,8 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
   if (!is.character(name) && !is.factor(name)) {
     stop("Error in getGender: 'name' argument must be character or factor.")
   }
-  if (!is.character(honorifics)) {
-    stop("Error in getGender: 'honorifics' argument must be character.")
+  if (!is.character(honorifics) || !is.matrix(honorifics) || !ncol(honorifics) == 2 || !nrow(honorifics) > 1) {
+    stop("Error in getGender: 'honorifics' argument must be character matrix nrow > 1; ncol == 2.")
   }
   if (!is.logical(ignore.case )) {
     stop("Error in getGender: 'ignore.case' argument must be logical.")
@@ -34,7 +34,7 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
     stop("Error in getGender: 'default' argument must be character.")
   }
   # Raise an error if honorifics are duplicated:
-  #   duplication could create ambiguity.
+  #   duplication could create ambiguity if one honorific mapped to more than one gender code.
   a <- honorifics[,1]
   if (!length(a[duplicated(a)])==0) {
     stop("Error in getGender: honorifics must be unique.")
@@ -47,14 +47,14 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
   
   # Convert matrix of honorifics and genders 
   #   into matrix of genders and regular expressions
-  regex.table = transformTable(honorifics)
+  regex = transformTable(honorifics)
   
   # Apply matchName function to name argument and return result.
   return (
     as.character(
       sapply(
         name, 
-        function(x) matchName(x, regex.table, ignore.case, default)
+        function(x) matchName(x, regex, ignore.case, default)
       )
     )
   )
@@ -126,7 +126,7 @@ matchName <- function(name, regex.table, ignore.case = TRUE, default)
   #     else returns default.
   
   # Set return value to default argument.
-  return.value <- default
+  ret <- default
   # Initialise logical variable that will indicate if match has been found.
   matched <- FALSE
   # Loop through all values in table.
@@ -141,13 +141,13 @@ matchName <- function(name, regex.table, ignore.case = TRUE, default)
         # This is the happy path.
         #   Set return variable to matched gender code and set matched variable to TRUE.
       } else {
-        return.value <- regex.table[i, 1]
+        ret <- regex.table[i, 1]
         matched <- TRUE
       }
     }
   }
   # When finished iterating loop, return return variable.
-  return (as.character(return.value))
+  return (as.character(ret))
 }
 
 transformTable <- function(honorifics) 
@@ -173,9 +173,9 @@ transformTable <- function(honorifics)
   # Get array of unique honorifics.
   u <- as.character(unique(h[, 2]))
   # Create 2 column matrix with a row for each honorific.
-  m <- matrix(u, nrow=length(u), ncol=2)
+  ret <- matrix(u, nrow=length(u), ncol=2)
   # Create lists of honorifics for each gender code.
-  x <- sapply(m[, 2], function(x)
+  x <- sapply(ret[, 2], function(x)
     h[h[, 2] == as.character(x), 1])
   # Convert lists of factors to lists of character vectors.
   x <- sapply(x, function(x)
@@ -184,8 +184,8 @@ transformTable <- function(honorifics)
   x <- sapply(x, function(x)
     mkExp(x))
   # Set column 2 of return matrix to vector of regular expressions.
-  m[,2] <- x
-  return (m)
+  ret[,2] <- x
+  return (ret)
 }
 
 mkExp <- function(x, pref = "(^|[^A-Za-z])", suff = "($|[^A-Za-z])")
@@ -203,11 +203,10 @@ mkExp <- function(x, pref = "(^|[^A-Za-z])", suff = "($|[^A-Za-z])")
   
   # Create '|' delimited string from character vector 
   #   and bookend with prefix and suffix.
-  ret <- paste(pref,
+  ret <- paste0(pref,
                "(",
                paste(x, collapse = "|"),
                ")",
-               suff,
-               sep = "")
+               suff)
   return (ret)
 }
