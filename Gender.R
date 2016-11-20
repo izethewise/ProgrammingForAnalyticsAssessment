@@ -3,7 +3,7 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
   # Matches honorific (mr, mrs, miss...) within name to corresponding gender code.
   #
   # Args:
-  #   name: Character variable of name being checked for gender.
+  #   name: Character or factor variable of name being checked for gender.
   #   honorifics: Character matrix containing honorific and corresponding gender code.
   #     Matrix format e.g.
   #     Mr     M
@@ -22,8 +22,8 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
   #   else returns default.
   
   #Section below validates input and halts exection if arguments not of correct type
-  if (!is.character(name)) {
-    stop("Error in getGender: 'name' argument must be character.")
+  if (!is.character(name) && !is.factor(name)) {
+    stop("Error in getGender: 'name' argument must be character or factor.")
   }
   if (!is.character(honorifics)) {
     stop("Error in getGender: 'honorifics' argument must be character.")

@@ -12,7 +12,7 @@ hons <- c("Mr","Male",
           "Prof","Neutral",
           "Sig","Male",
           "Mme","Female")
-hons <- (matrix(hons,length(hons)/2,2,byrow = T)) 
+hons <- (matrix(hons,length(hons)/2,2,byrow = T))
 
 #honorifics to raise duplicates error
 dups <- c("Mr","Male",  
@@ -42,9 +42,9 @@ empt <- (matrix(empt,length(empt)/2,2,byrow = T))
 
 
 test_that("getGender raises error argument of incorrect type",{
-  expect_error(getGender(c(1,2,3)),"Error in getGender: 'name' argument must be character.")
+  expect_error(getGender(c(1,2,3)), "Error in getGender: 'name' argument must be character or factor.")
   expect_error(getGender("Smith, Mrs J",honorifics = as.factor(hons)),"Error in getGender: 'honorifics' argument must be character.")
-  expect_error(getGender("Smith, Mrs J",honorifics = hons, ignore.case = "X"),"Error in getGender: 'ignore.case' argument must be logical.")
+  expect_error(getGender(as.factor("Smith, Mrs J"),honorifics = hons, ignore.case = "X"),"Error in getGender: 'ignore.case' argument must be logical.")
   expect_error(getGender("Smith, Mrs J",honorifics = hons, ignore.case = TRUE, default = 1),"Error in getGender: 'default' argument must be character.")
 })
 
