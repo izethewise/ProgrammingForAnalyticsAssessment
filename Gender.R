@@ -20,7 +20,7 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
   #   Where name can be matched to an entry in honorifics[,1] returns corresponding entry honorifics[,2] 
   #   else returns default.
   
-  #Section below validates input and halts exection if arguments not of correct type
+  # Section below validates input and halts exection if arguments not of correct type
   if (!is.character(name) && !is.factor(name)) {
     stop("Error in getGender: 'name' argument must be character or factor.")
   }
@@ -33,23 +33,23 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
   if (!is.character(default)) {
     stop("Error in getGender: 'default' argument must be character.")
   }
-  #Raise an error if honorifics are duplicated:
-  # duplication could create ambiguity.
+  # Raise an error if honorifics are duplicated:
+  #   duplication could create ambiguity.
   a <- honorifics[,1]
   if (!length(a[duplicated(a)])==0) {
     stop("Error in getGender: honorifics must be unique.")
   }
-  #Raise an error if honorifics contain empty strings.
+  # Raise an error if honorifics contain empty strings.
   a <- trimws(honorifics)
   if (!length(a[a==""])==0) {
     stop("Error in getGender: honorifics must not contain empty strings.")
   }
   
-  #Convert matrix of honorifics and genders 
-  # into matrix of genders and regular expressions
+  # Convert matrix of honorifics and genders 
+  #   into matrix of genders and regular expressions
   regex.table = transformTable(honorifics)
   
-  #Apply matchName function to name argument and return result.
+  # Apply matchName function to name argument and return result.
   return (
     as.character(
       sapply(
@@ -66,13 +66,43 @@ basic.honorifics <- function()
  # Returns:
  #  Basic honorific/gender code matrix for use in main getGender function
   
-  m <- c("Mr",    "M",  
-         "Master","M", 
-         "Miss",  "F",  
-         "Ms",    "F",
-         "Mrs",   "F", 
-         "Dr",    "N", 
-         "Prof",  "N")
+  m <- c("Mr",      "M",  
+         "Master",  "M", 
+         "Miss",    "F",  
+         "Ms",      "F",
+         "Mrs",     "F", 
+         "Dr",      "N", 
+         "Prof",    "N"
+         )
+  m <- (matrix(m,length(m)/2,2,byrow = T)) 
+  return (m)
+}
+
+enhanced.honorifics <- function()
+{
+  # Returns:
+  #  More extensive honorific/gender code matrix for use in main getGender function
+  
+  m <- c("Mr",      "M",  
+         "Master",  "M", 
+         "Miss",    "F",  
+         "Ms",      "F",
+         "Mrs",     "F", 
+         "Dr",      "N", 
+         "Prof",    "N",
+         "Sig",     "M",
+         "Colonel", "M",
+         "Major",   "M",
+         "Captain", "M",
+         "Mme",     "F",
+         "Rev",     "M",
+         "Mlle",    "F",
+         "Dona",    "F",
+         "Sir",     "M",
+         "Fr",      "M",
+         "Don",     "M",
+         "Countess","F",
+         "Lady",    "F")
   m <- (matrix(m,length(m)/2,2,byrow = T)) 
   return (m)
 }

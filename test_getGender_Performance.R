@@ -35,5 +35,16 @@ test_that("getGender using basic.honorifics processes 100000 rows < minute",{
   expect_equal(l, 100000)
   print(msg)
 })
-b
-a
+
+b <- Sys.time()
+l <- length(getGender(n, honorifics = enhanced.honorifics()))
+a <- Sys.time()
+msg <- a - b
+
+test_that("getGender using enhanced.honorifics processes 100000 rows < minute",{
+  expect_true(b + 60 > a)
+  expect_equal(l, 100000)
+  print(msg)
+})
+
+
