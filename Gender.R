@@ -138,12 +138,12 @@ matchName <- function(name, regex.matrix, ignore.case = TRUE, default)
       if (matched) {
         # If more than one honorific is matched and comma present, 
         #   reprocess string to right of comma.
-        #   Example of such name: Master, Mrs Jane.
+        #   Examples of such name: Master, Mrs Jane; Don, Mr James.
         # Check if comma exists.
         pos <- regexpr(',', name)
         if (pos > 0) {
           # Take string to right of comma.
-          name <- trimws(substr(name, pos+1, nchar(name)))
+          name <- trimws(substr(name, pos+1, nchar(as.character(name))))
           # If another comma exists, this is an unanticipated format so return an error.
           pos <- regexpr(',', name)
           if (pos > 0) {
