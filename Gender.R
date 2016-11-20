@@ -46,8 +46,7 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
     stop("Error in getGender: honorifics must not contain empty strings.")
   }
   
-  # Convert matrix of honorifics and genders 
-  #   into matrix of genders and regular expressions
+  # Convert matrix of honorifics and genders into matrix of genders and regular expressions
   regex = transformTable(honorifics)
   
   # Apply matchName function to name argument and return result.
