@@ -187,19 +187,14 @@ transformTable <- function(honorifics)
   
   # Set local variable. 
   h <- honorifics
-  # Get array of unique honorifics.
+  # Get vector of unique gender codes.
   u <- as.character(unique(h[, 2]))
-  # Create 2 column matrix with a row for each honorific.
+  # Create 2 column matrix with a row for each gender code.
   ret <- matrix(u, nrow=length(u), ncol=2)
-  # Create lists of honorifics for each gender code.
-  x <- sapply(ret[, 2], function(x)
-    h[h[, 2] == as.character(x), 1])
-  # Convert lists of factors to lists of character vectors.
-  x <- sapply(x, function(x)
-    as.character(x))
+  # Create list of honorifics for each gender code.
+  x <- sapply(ret[, 2], function(x) h[h[, 2] == as.character(x), 1])
   # Convert character vectors to regular expression.
-  x <- sapply(x, function(x)
-    mkExp(x))
+  x <- sapply(x, function(x) mkExp(x))
   # Set column 2 of return matrix to vector of regular expressions.
   ret[,2] <- x
   return (ret)
