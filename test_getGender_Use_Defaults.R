@@ -11,6 +11,7 @@ test_that("getGender using basic.honorifics case insensitve single match",{
   expect_equal(getGender("smith, ms joan"), "F")
   expect_equal(getGender("smith, prof joan"), "N")
   expect_equal(getGender("smith, dr joan"), "N")
+  expect_equal(getGender("master, mrs joan"), "F")
 })
 
 test_that("getGender using basic.honorifics case insensitve muti match",{
@@ -51,4 +52,12 @@ test_that("getGender using basic.honorifics case sensitve muti match returns err
 
 test_that("getGender using basic.honorifics case sensitve returns default when passed empty string",{
   expect_equal(getGender("",ignore.case = FALSE), "U")
+})
+
+test_that("getGender returns error when two honorifics and two commas",{
+  expect_equal(getGender("master, mrs, joan"), "Err 2")
+})
+
+test_that("getGender returns error when one honorifics and two commas",{
+  expect_equal(getGender("smith, mrs, joan"), "F")
 })

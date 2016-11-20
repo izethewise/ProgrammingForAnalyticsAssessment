@@ -17,8 +17,9 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
   #   default: If name cannot be matched, default is returned.
   #   
   # Returns:
-  #   Where name can be matched to an entry in honorifics[,1] returns corresponding entry honorifics[,2] 
-  #   else returns default.
+  #   Where name can be matched to an entry in honorifics[,1] returns corresponding entry honorifics[,2]
+  #     returns corresponding entry honorifics[,2]
+  #     else returns default.
   
   # Section below validates input and halts exection if arguments not of correct type
   if (!is.character(name) && !is.factor(name)) {
@@ -54,7 +55,8 @@ getGender <- function(name, honorifics = basic.honorifics(), ignore.case = TRUE,
     as.character(
       sapply(
         name, 
-        function(x) matchName(x, regex, ignore.case, default)
+        function(x) 
+          matchName(x, regex, ignore.case, default)
       )
     )
   )
@@ -107,13 +109,13 @@ enhanced.honorifics <- function()
   return (m)
 }
 
-matchName <- function(name, regex.table, ignore.case = TRUE, default)
+matchName <- function(name, regex.matrix, ignore.case = TRUE, default)
 {
   # Matches name to gender code using regular expressions.
   #
   # Args:
   #   name: Character/factor variable of name being checked for gender.
-  #   regex.table: Two column matrix: 
+  #   regex.matrix: Two column matrix: 
   #     E.g.
   #     M   (^|[^A-Za-z])(Mr|Master)($|[^A-Za-z])
   #     F   (^|[^A-Za-z])(Mrs|Miss)($|[^A-Za-z])
@@ -121,27 +123,43 @@ matchName <- function(name, regex.table, ignore.case = TRUE, default)
   #   default: See getGender.
   #
   # Returns:
-  #   Where name can be matched to regex.table[,2] 
-  #     returns corresponding entry regex.table[,1]
+  #   Where name can be matched to regex.matrix[,2] 
+  #     returns corresponding entry regex.matrix[,1]
   #     else returns default.
   
   # Set return value to default argument.
   ret <- default
   # Initialise logical variable that will indicate if match has been found.
   matched <- FALSE
-  # Loop through all values in table.
-  for (i in 1:nrow(regex.table)) {
+  # Loop through all values in matrix.
+  for (i in 1:nrow(regex.matrix)) {
     # If name matches regular expression...
-    if (grepl(regex.table[i, 2], name, ignore.case)) {
+    if (grepl(regex.matrix[i, 2], name, ignore.case)) {
       # If matched == TRUE at this point, match has already been found.
       if (matched) {
-        # If more than one honorific is matched, 
-        # return an error.
-        return ("Err 1")
+        # If more than one honorific is matched and comma present, 
+        #   reprocess string to right of comma.
+        #   Example of such name: Master, Mrs Jane.
+        # Check if comma exists.
+        pos <- regexpr(',', name)
+        if (pos > 0) {
+          # Take string to right of comma.
+          name <- trimws(substr(name, pos+1, nchar(name)))
+          # If another comma exists, this is an unanticipated format so return an error.
+          pos <- regexpr(',', name)
+          if (pos > 0) {
+            return ("Err 2")
+          }
+          # Recursively process string to right of comma.
+          ret <- matchName(name, regex.matrix, ignore.case = TRUE, default)
+        } else {
+          # return an error.
+          return ("Err 1")
+        }
         # This is the happy path.
         #   Set return variable to matched gender code and set matched variable to TRUE.
       } else {
-        ret <- regex.table[i, 1]
+        ret <- regex.matrix[i, 1]
         matched <- TRUE
       }
     }
@@ -153,7 +171,7 @@ matchName <- function(name, regex.table, ignore.case = TRUE, default)
 transformTable <- function(honorifics) 
 {
   # Transforms two column matrix of honorifics and gender code
-  #   into two colum matrix of gender code and reg ex of honorific:
+  #   into two column matrix of gender code and regular expression of honorifics:
   #
   # Args:
   #   honorifics: 
@@ -190,7 +208,7 @@ transformTable <- function(honorifics)
 
 mkExp <- function(x, pref = "(^|[^A-Za-z])", suff = "($|[^A-Za-z])")
 {
-  # Converts character vector to regex string
+  # Converts character vector to regular expression string
   #
   # Args:
   #   x: Character vector.
