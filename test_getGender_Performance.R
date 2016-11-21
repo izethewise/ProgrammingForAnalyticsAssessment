@@ -37,7 +37,7 @@ test_that("getGender using basic.honorifics processes 100,000 rows < minute",{
 })
 
 b <- Sys.time()
-l <- length(getGender(n, honorifics = enhanced.honorifics()))
+l <- length(getGender(n, honorifics = enhanced.honorifics))
 a <- Sys.time()
 msg <- a - b
 
@@ -60,7 +60,7 @@ test_that("getGender using basic.honorifics processes 1,000,000 rows < 2 minutes
 })
 
 b <- Sys.time()
-l <- length(getGender(n, honorifics = enhanced.honorifics()))
+l <- length(getGender(n, honorifics = enhanced.honorifics))
 a <- Sys.time()
 msg <- a - b
 
