@@ -21,7 +21,7 @@ getGender <- function(name, honorifics = basic.honorifics, ignore.case = TRUE, d
   #     returns corresponding entry honorifics[,2]
   #     else returns default.
   
-  # Section below validates input and halts exection if arguments not of correct type
+  # Section below validates input and halts exection if arguments not of correct type.
   if (!is.character(name) && !is.factor(name)) {
     stop("Error in getGender: 'name' argument must be character or factor.")
   }
@@ -46,7 +46,7 @@ getGender <- function(name, honorifics = basic.honorifics, ignore.case = TRUE, d
     stop("Error in getGender: honorifics must not contain empty strings.")
   }
   
-  # Convert matrix of honorifics and genders into matrix of genders and regular expressions
+  # Convert matrix of honorifics and genders into matrix of genders and regular expressions.
   regex = transformTable(honorifics)
   
   # Apply matchName function to name argument and return result.
@@ -59,7 +59,7 @@ getGender <- function(name, honorifics = basic.honorifics, ignore.case = TRUE, d
 }
 
 
-#  Basic honorific/gender code matrix for use in main getGender function
+#  Basic honorific/gender code matrix for use in main getGender function.
 m <- c("Mr",      "M",  
        "Master",  "M", 
        "Miss",    "F",  
@@ -70,7 +70,7 @@ m <- c("Mr",      "M",
 )
 basic.honorifics <- (matrix(m,length(m)/2,2,byrow = T)) 
 
-#  More extensive honorific/gender code matrix for use in main getGender function
+#  More extensive honorific/gender code matrix for use in main getGender function.
 m <- c("Mr",      "M",
        "Master",  "M",
        "Miss",    "F",
@@ -93,7 +93,7 @@ m <- c("Mr",      "M",
        "Lady",    "F")
 extended.honorifics <- (matrix(m,length(m)/2,2,byrow = T))
 
-# Classified honorific/gender code matrix for use in main getGender functio
+# Classified honorific/gender code matrix for use in main getGender function.
 m <- c("Mr",      "M Eng Std",
        "Master",  "M Eng Std",
        "Miss",    "F Eng Std",
@@ -211,7 +211,7 @@ transformTable <- function(honorifics)
 
 mkExp <- function(x, pref = "(^|[^A-Za-z])", suff = "($|[^A-Za-z])")
 {
-  # Converts character vector to regular expression string
+  # Converts character vector to regular expression string.
   #
   # Args:
   #   x: Character vector.
