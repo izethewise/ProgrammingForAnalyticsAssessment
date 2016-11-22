@@ -21,12 +21,17 @@ getGender <- function(name, honorifics = basic.honorifics, ignore.case = TRUE, d
   #     returns corresponding entry honorifics[,2]
   #     else returns default.
   
+  # If honorifics passed as dataframe, convert to matrix.
+  if (is.data.frame(honorifics)) {
+    honorifics <- as.matrix(honorifics)
+  }
+  
   # Section below validates input and halts exection if arguments not of correct type.
   if (!is.character(name) && !is.factor(name)) {
     stop("Error in getGender: 'name' argument must be character or factor.")
   }
   if (!is.character(honorifics) || !is.matrix(honorifics) || !ncol(honorifics) == 2 || !nrow(honorifics) > 0) {
-    stop("Error in getGender: 'honorifics' argument must be character matrix nrow > 0; ncol == 2.")
+    stop("Error in getGender: 'honorifics' argument must coerce to character matrix nrow > 0; ncol == 2.")
   }
   if (!is.logical(ignore.case)) {
     stop("Error in getGender: 'ignore.case' argument must be logical.")

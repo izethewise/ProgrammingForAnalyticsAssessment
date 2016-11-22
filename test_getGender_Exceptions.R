@@ -43,8 +43,8 @@ empt <- (matrix(empt,length(empt)/2,2,byrow = T))
 
 test_that("getGender raises error argument of incorrect type",{
   expect_error(getGender(c(1,2,3)), "Error in getGender: 'name' argument must be character or factor.")
-  expect_error(getGender("Smith, Mrs J",honorifics = as.factor(hons)),"Error in getGender: 'honorifics' argument must be character matrix nrow > 0; ncol == 2.")
-  expect_error(getGender("Smith, Mrs J",honorifics = matrix("X",0,2)),"Error in getGender: 'honorifics' argument must be character matrix nrow > 0; ncol == 2.")
+  expect_error(getGender("Smith, Mrs J",honorifics = as.factor(hons)),"Error in getGender: 'honorifics' argument must coerce to character matrix nrow > 0; ncol == 2.")
+  expect_error(getGender("Smith, Mrs J",honorifics = matrix("X",0,2)),"Error in getGender: 'honorifics' argument must coerce to character matrix nrow > 0; ncol == 2.")
   expect_error(getGender(as.factor("Smith, Mrs J"),honorifics = hons, ignore.case = "X"),"Error in getGender: 'ignore.case' argument must be logical.")
   expect_error(getGender("Smith, Mrs J",honorifics = hons, ignore.case = TRUE, default = 1),"Error in getGender: 'default' argument must be character.")
 })
