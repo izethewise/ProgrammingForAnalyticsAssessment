@@ -28,13 +28,13 @@ test_that("getGender using passed in honorifics case insensitve muti match",{
 })
 
 test_that("getGender using passed in honorifics case sensitve single match returns default",{
-  expect_equal(getGender("smith, mr john", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
-  expect_equal(getGender("smith, master john", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
-  expect_equal(getGender("smith, mrs joan", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
-  expect_equal(getGender("smith, miss joan", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
-  expect_equal(getGender("smith, ms joan", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
-  expect_equal(getGender("smith, prof joan", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
-  expect_equal(getGender("smith, dr joan", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
+  expect_equal(getGender("smith, mr j.", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
+  expect_equal(getGender("smith, master j.", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
+  expect_equal(getGender("smith, mrs j.", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
+  expect_equal(getGender("smith, miss j.", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
+  expect_equal(getGender("smith, ms j.", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
+  expect_equal(getGender("smith, prof j.", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
+  expect_equal(getGender("smith, dr j.", honorifics = hons,ignore.case = FALSE, default = "X"), "X")
 })
 
 test_that("getGender using passed in honorifics case sensitve single match returns match",{
@@ -48,11 +48,11 @@ test_that("getGender using passed in honorifics case sensitve single match retur
 })
 
 test_that("getGender using passed in honorifics case sensitve muti match returns default",{
-  expect_equal(getGender(c("smith, mr john","smith, mrs joan","smith, prof joan"), honorifics = hons,ignore.case = FALSE, default = "X"), c("X","X","X"))
+  expect_equal(getGender(c("smith, mr j.","smith, mrs j.","smith, prof j."), honorifics = hons,ignore.case = FALSE, default = "X"), c("X","X","X"))
 })
 
 test_that("getGender using passed in honorifics case sensitve muti match returns mixed",{
-  expect_equal(getGender(c("smith, Mr john","smith, mrs joan","smith, Prof joan"), honorifics = hons,ignore.case = FALSE, default = "X"), c("Male","X","Neutral"))
+  expect_equal(getGender(c("smith, Mr j.","smith, mrs j.","smith, Prof j."), honorifics = hons,ignore.case = FALSE, default = "X"), c("Male","X","Neutral"))
 })
 
 test_that("getGender using passed in honorifics case sensitve muti match returns error where two matches",{

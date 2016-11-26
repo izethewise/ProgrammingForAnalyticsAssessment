@@ -30,22 +30,12 @@ l <- length(getGender(n))
 a <- Sys.time()
 msg <- a - b
 
-test_that("getGender using basic.honorifics processes 100,000 rows < minute",{
+test_that("getGender using default.honorifics processes 100,000 rows < minute",{
   expect_true(b + 60 > a)
   expect_equal(l, 100000)
   print(msg)
 })
 
-b <- Sys.time()
-l <- length(getGender(n, honorifics = extended.honorifics))
-a <- Sys.time()
-msg <- a - b
-
-test_that("getGender using enhanced.honorifics processes 100,000 rows < minute",{
-  expect_true(b + 60 > a)
-  expect_equal(l, 100000)
-  print(msg)
-})
 
 n <- rep(hon,50000)
 b <- Sys.time()
@@ -53,19 +43,9 @@ l <- length(getGender(n))
 a <- Sys.time()
 msg <- a - b
 
-test_that("getGender using basic.honorifics processes 1,000,000 rows < 2 minutes",{
+test_that("getGender using default.honorifics processes 1,000,000 rows < 2 minutes",{
   expect_true(b + 120 > a)
   expect_equal(l, 1000000)
   print(msg)
 })
 
-b <- Sys.time()
-l <- length(getGender(n, honorifics = extended.honorifics))
-a <- Sys.time()
-msg <- a - b
-
-test_that("getGender using enhanced.honorifics processes 1,000,000 rows < 2 minutes",{
-  expect_true(b + 120 > a)
-  expect_equal(l, 1000000)
-  print(msg)
-})
