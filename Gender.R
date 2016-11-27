@@ -1,6 +1,7 @@
-getGender <- function(name, honorifics = default.honorifics, ignore.case = TRUE, default = "U")
+getGender <- function(name, honorifics = default.honorifics, firstname.pos = 2, default = "u")
 {
-  # Matches honorific (mr, mrs, miss...) within name to corresponding gender code.
+  # Matches honorific (mr, mrs, miss...) within name to corresponding gender.
+  #   Where gender cannot be matched, uses first name matching in gender package.
   #
   # Args:
   #   name: Character or factor variable of name being checked for gender.
@@ -12,14 +13,22 @@ getGender <- function(name, honorifics = default.honorifics, ignore.case = TRUE,
   #     Miss   female
   #     etc.
   #     Default: see basic.honorifics function.
-  #   ignore.case: If TRUE, mr or Mr will both return a match for Mr.
-  #                If FALSE, mr will not return a match for Mr.
+  #   firstname.pos: Position after comma, of block of alpha characters defining first name within name.
   #   default: If name cannot be matched, default is returned.
   #   
   # Returns:
   #   Where name can be matched to an entry in honorifics[,1] returns corresponding entry honorifics[,2]
   #     returns corresponding entry honorifics[,2]
   #     else returns default.
+  
+  # Check if gender package installed and load library otherwise warn.
+  if("gender" %in% rownames(installed.packages()) == FALSE) {
+    warning("Warning: getGender function uses 'gender' package. Please install for improved matching")
+    use.firstname <- FALSE
+  } else {
+    library(gender)
+    use.firstname <- TRUE
+  }
   
   # Convert input to correct data type and use default error handling.
   honorifics <- as.matrix(honorifics)
@@ -31,14 +40,14 @@ getGender <- function(name, honorifics = default.honorifics, ignore.case = TRUE,
   if (!is.character(honorifics) || !is.matrix(honorifics) || !ncol(honorifics) == 2 || !nrow(honorifics) > 0) {
     stop("Error in getGender: 'honorifics' argument must coerce to character matrix nrow > 0; ncol == 2.")
   }
-  if (!is.logical(ignore.case)) {
-    stop("Error in getGender: 'ignore.case' argument must be logical.")
+  if (!is.numeric(firstname.pos)) {
+    stop("Error in getGender: 'firstname.pos' argument must be numeric.")
   }
   if (!is.character(default)) {
     stop("Error in getGender: 'default' argument must be character.")
   }
   # Raise an error if honorifics are duplicated:
-  #   duplication could create ambiguity if one honorific mapped to more than one gender code.
+  #   duplication could create ambiguity if one honorific mapped to more than one gender.
   a <- honorifics[,1]
   if (!length(a[duplicated(a)])==0) {
     stop("Error in getGender: honorifics must be unique.")
@@ -56,7 +65,7 @@ getGender <- function(name, honorifics = default.honorifics, ignore.case = TRUE,
   # Apply matchName function to name argument and return result.
   return (
     as.character(
-      sapply(name, function(x) matchName(x, regex, ignore.case, default)
+      sapply(name, function(x) matchName(x, regex, firstname.pos, use.firstname, default)
       )
     )
   )
@@ -69,9 +78,9 @@ m <- c("Mr",      "male",
        "Miss",    "female",
        "Ms",      "female",
        "Mrs",     "female",
-       "Sig.",     "male",
+       "Sig.",    "male",
        "Mme",     "female",
-       "Rev.",     "male",
+       "Rev.",    "male",
        "Mlle",    "female",
        "Dona",    "female",
        "Sir",     "male",
@@ -82,9 +91,9 @@ m <- c("Mr",      "male",
 default.honorifics <- matrix(m,length(m)/2,2,byrow = T)
 
 
-matchName <- function(name, regex.matrix, ignore.case = TRUE, default)
+matchName <- function(name, regex.matrix, firstname.pos, use.firstname, default)
 {
-  # Matches name to gender code using regular expressions.
+  # Matches name to gender using regular expressions.
   #
   # Args:
   #   name: Character/factor variable of name being checked for gender.
@@ -92,7 +101,8 @@ matchName <- function(name, regex.matrix, ignore.case = TRUE, default)
   #     E.g.
   #     male    (^|[^A-Za-z])(Mr|Master)($|[^A-Za-z])
   #     female  (^|[^A-Za-z])(Mrs|Miss)($|[^A-Za-z])
-  #   ignore.case: See getGender.
+  #   firstname.pos: See getGender.
+  #   use.firstname: If false, do not attempt firstname processing.
   #   default: See getGender.
   #
   # Returns:
@@ -102,23 +112,45 @@ matchName <- function(name, regex.matrix, ignore.case = TRUE, default)
   
   # Set return value to default argument.
   ret <- default
-  # Loop through all values in matrix.
+  # Get position of comma in name.
+  pos <- regexpr(',', name)
+  # Set local variable to characters to right of comma.
+  tmpname <- trimws(substr(name, pos+1, nchar(as.character(name))))
+  # Loop through all values in honorifics matrix.
   for (i in 1:nrow(regex.matrix)) {
-    # If name matches regular expression...
-    if (grepl(regex.matrix[i, 2], name, ignore.case)) {
-        ret <- regex.matrix[i, 1]
+    # Check whether remainder of name contains honorific.
+    if (grepl(regex.matrix[i, 2], tmpname, ignore.case = TRUE)) {
+      # If honorific found, set return value to corresponding gender.
+      ret <- regex.matrix[i, 1]
+      # Don't bother with rest of loop if we've already found match.
+      break
     }
   }
-  if (ret == default) {
-    ret <- matchFirstname(name, default)
+  # If we've not matched on honorific and gender package installed,
+  #   attemp to match on first name.
+  if (ret == default && use.firstname) {
+    ret <- matchFirstname(tmpname, firstname.pos, default)
   }
   # When finished iterating loop, return return variable.
   return (as.character(ret))
 }
 
-matchFirstname <- function(name, default) {
-  fname <- strsplit(gsub("[^[:alnum:] ]", "", name), " +")[[1]][3]
+matchFirstname <- function(name, firstname.pos, default) 
+{
+  # Calls gender method of gender package to return gender from first name.
+  #
+  # Args:
+  #   firstname.pos: See getGender.
+  #   default: See getGender.
+  
+  # Extract first name from name by splitting name 
+  #   into chunks of alpha characters and taking that
+  #   which corresponds to defined first name position.
+  fname <- strsplit(gsub("[^A-Za-z -]", "", name), " +")[[1]][firstname.pos]
+  # Call the gender method.
   ret <- as.character(gender(fname))[4]
+  # If gender match return default,
+  #   otherwise return gender.
   if (!as.character(ret) == "logical(0)") {
     return (ret)
   }
@@ -127,8 +159,8 @@ matchFirstname <- function(name, default) {
 
 transformTable <- function(honorifics) 
 {
-  # Transforms two column matrix of honorifics and gender code
-  #   into two column matrix of gender code and regular expression of honorifics:
+  # Transforms two column matrix of honorifics and gender
+  #   into two column matrix of gender and regular expression of honorifics:
   #
   # Args:
   #   honorifics: 
@@ -145,11 +177,11 @@ transformTable <- function(honorifics)
   
   # Set local variable. 
   h <- honorifics
-  # Get vector of unique gender codes.
+  # Get vector of genders.
   u <- as.character(unique(h[, 2]))
-  # Create 2 column matrix with a row for each gender code.
+  # Create 2 column matrix with a row for each gender.
   ret <- matrix(u, nrow=length(u), ncol=2)
-  # Create list of honorifics for each gender code.
+  # Create list of honorifics for each gender.
   x <- sapply(ret[, 2], function(x) h[h[, 2] == as.character(x), 1])
   # Convert list to regular expressions of honorifics.
   x <- sapply(x, function(x) mkExp(x))
@@ -174,9 +206,9 @@ mkExp <- function(x, pref = "(^|[^A-Za-z])", suff = "($|[^A-Za-z])")
   # Create '|' delimited string from character vector 
   #   and bookend with prefix and suffix.
   ret <- paste0(pref,
-               "(",
-               paste(x, collapse = "|"),
-               ")",
-               suff)
+                "(",
+                paste(x, collapse = "|"),
+                ")",
+                suff)
   return (ret)
 }
