@@ -12,7 +12,7 @@ getGender <- function(name, honorifics = default.honorifics, firstname.pos = 2, 
   #     Mrs    female
   #     Miss   female
   #     etc.
-  #     Default: see basic.honorifics function.
+  #     Default: see default.honorifics matrix.
   #   firstname.pos: Position after comma, of block of alpha characters defining first name within name.
   #   default: If name cannot be matched, default is returned.
   #   
@@ -78,9 +78,9 @@ m <- c("Mr",      "male",
        "Miss",    "female",
        "Ms",      "female",
        "Mrs",     "female",
-       "Sig.",    "male",
+       "Sig",    "male",
        "Mme",     "female",
-       "Rev.",    "male",
+       "Rev",    "male",
        "Mlle",    "female",
        "Dona",    "female",
        "Sir",     "male",
