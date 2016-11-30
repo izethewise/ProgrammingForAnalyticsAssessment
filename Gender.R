@@ -12,14 +12,13 @@ getGender <- function(name, honorifics = default.honorifics, firstname.pos = 2, 
   #     Mrs    female
   #     Miss   female
   #     etc.
-  #     Default: see default.honorifics matrix.
-  #   firstname.pos: Position after comma, of block of alpha characters defining first name within name.
+  #     Default: see basic.honorifics function.
+  #   firstname.pos: Position after comma, of block of alpha characters defining 
+  #     first name within name.
   #   default: If name cannot be matched, default is returned.
   #   
   # Returns:
-  #   Where name can be matched to an entry in honorifics[,1] returns corresponding entry honorifics[,2]
-  #     returns corresponding entry honorifics[,2]
-  #     else returns default.
+  #   Gender identified from name.
   
   # Check if gender package installed and load library otherwise warn.
   if("gender" %in% rownames(installed.packages()) == FALSE) {
@@ -37,17 +36,19 @@ getGender <- function(name, honorifics = default.honorifics, firstname.pos = 2, 
   if (!is.character(name) && !is.factor(name)) {
     stop("Error in getGender: 'name' argument must be character or factor.")
   }
-  if (!is.character(honorifics) || !is.matrix(honorifics) || !ncol(honorifics) == 2 || !nrow(honorifics) > 0) {
+  if (!is.character(honorifics) || !is.matrix(honorifics) || 
+      !ncol(honorifics) == 2 || !nrow(honorifics) > 0) {
     stop("Error in getGender: 'honorifics' argument must coerce to character matrix nrow > 0; ncol == 2.")
   }
-  if (!is.numeric(firstname.pos)) {
-    stop("Error in getGender: 'firstname.pos' argument must be numeric.")
+  if (!is.integer(firstname.pos)) {
+    stop("Error in getGender: 'firstname.pos' argument must be integer.")
   }
   if (!is.character(default)) {
     stop("Error in getGender: 'default' argument must be character.")
   }
   # Raise an error if honorifics are duplicated:
-  #   duplication could create ambiguity if one honorific mapped to more than one gender.
+  #   duplication could create ambiguity if one honorific 
+  #   mapped to more than one gender.
   a <- honorifics[,1]
   if (!length(a[duplicated(a)])==0) {
     stop("Error in getGender: honorifics must be unique.")
@@ -59,17 +60,19 @@ getGender <- function(name, honorifics = default.honorifics, firstname.pos = 2, 
   }
   # End of validation section.
   
-  # Convert matrix of honorifics and genders into matrix of genders and regular expressions.
+  # Convert matrix of honorifics and genders into 
+  #   matrix of genders and regular expressions.
   regex = transformTable(honorifics)
   
   # Apply matchName function to name argument and return result.
   return (
     as.character(
-      sapply(name, function(x) matchName(x, regex, firstname.pos, use.firstname, default)
+      sapply(name, function(x) matchName(x, regex, firstname.pos, 
+                                         use.firstname, default)
       )
     )
   )
-}
+  }
 
 
 #  Default list of honorifics.
@@ -78,9 +81,9 @@ m <- c("Mr",      "male",
        "Miss",    "female",
        "Ms",      "female",
        "Mrs",     "female",
-       "Sig",    "male",
+       "Sig.",    "male",
        "Mme",     "female",
-       "Rev",    "male",
+       "Rev.",    "male",
        "Mlle",    "female",
        "Dona",    "female",
        "Sir",     "male",
