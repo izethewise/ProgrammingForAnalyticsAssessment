@@ -45,7 +45,8 @@ test_that("getGender raises error argument of incorrect type",{
   expect_error(getGender(c(1,2,3)), "Error in getGender: 'name' argument must be character or factor.")
   expect_error(getGender("Smith, Mrs J",honorifics = as.factor(hons)),"Error in getGender: 'honorifics' argument must coerce to character matrix nrow > 0; ncol == 2.")
   expect_error(getGender("Smith, Mrs J",honorifics = matrix("X",0,2)),"Error in getGender: 'honorifics' argument must coerce to character matrix nrow > 0; ncol == 2.")
-  expect_error(getGender("Smith, Mrs J",honorifics = hons, firstname.pos = 2, default = 1),"Error in getGender: 'default' argument must be character.")
+  expect_error(getGender("Smith, Mrs J",honorifics = hons, default = 1),"Error in getGender: 'default' argument must be character.")
+  expect_error(getGender("Smith, Mrs J",honorifics = hons, firstname.pos = 2.7),"Error in getGender: 'firstname.pos' argument must be integer.")
 })
 
 test_that("getGender raises error duplicated honorific",{

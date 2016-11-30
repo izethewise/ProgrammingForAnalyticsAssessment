@@ -1,4 +1,5 @@
-getGender <- function(name, honorifics = default.honorifics, firstname.pos = 2, default = "u")
+getGender <- function(name, honorifics = default.honorifics, 
+                      firstname.pos = 2, default = "u")
 {
   # Matches honorific (mr, mrs, miss...) within name to corresponding gender.
   #   Where gender cannot be matched, uses first name matching in gender package.
@@ -22,14 +23,16 @@ getGender <- function(name, honorifics = default.honorifics, firstname.pos = 2, 
   
   # Check if gender package installed and load library otherwise warn.
   if("gender" %in% rownames(installed.packages()) == FALSE) {
-    warning("Warning: getGender function uses 'gender' package. Please install for improved matching")
+    msg <- "Warning: getGender function uses 'gender' package."
+    msg <- paste(msg, "Please install for improved matching")
+    warning(msg)
     use.firstname <- FALSE
   } else {
     library(gender)
     use.firstname <- TRUE
   }
   
-  # Convert input to correct data type and use default error handling.
+  # Convert input to correct data type.
   honorifics <- as.matrix(honorifics)
   
   # Section below validates input and halts exection if arguments not of correct type.
@@ -38,9 +41,11 @@ getGender <- function(name, honorifics = default.honorifics, firstname.pos = 2, 
   }
   if (!is.character(honorifics) || !is.matrix(honorifics) || 
       !ncol(honorifics) == 2 || !nrow(honorifics) > 0) {
-    stop("Error in getGender: 'honorifics' argument must coerce to character matrix nrow > 0; ncol == 2.")
+    msg <- "Error in getGender: 'honorifics' argument must coerce to character"
+    msg <- paste(msg, "matrix nrow > 0; ncol == 2.")
+    stop(msg)
   }
-  if (!is.integer(firstname.pos)) {
+  if (!is.numeric(firstname.pos) || !firstname.pos == floor(firstname.pos)) {
     stop("Error in getGender: 'firstname.pos' argument must be integer.")
   }
   if (!is.character(default)) {
@@ -81,9 +86,9 @@ m <- c("Mr",      "male",
        "Miss",    "female",
        "Ms",      "female",
        "Mrs",     "female",
-       "Sig.",    "male",
+       "Sig",    "male",
        "Mme",     "female",
-       "Rev.",    "male",
+       "Rev",    "male",
        "Mlle",    "female",
        "Dona",    "female",
        "Sir",     "male",
@@ -112,14 +117,14 @@ matchName <- function(name, regex.matrix, firstname.pos, use.firstname, default)
   #   Where name can be matched to regex.matrix[,2] 
   #     returns corresponding entry regex.matrix[,1]
   #     else returns default.
-  
+
   # Set return value to default argument.
   ret <- default
   # Get position of comma in name.
   pos <- regexpr(',', name)
   # Set local variable to characters to right of comma.
   tmpname <- trimws(substr(name, pos+1, nchar(as.character(name))))
-  # Loop through all values in honorifics matrix.
+  # Loop through all values in honorifics matrix.               
   for (i in 1:nrow(regex.matrix)) {
     # Check whether remainder of name contains honorific.
     if (grepl(regex.matrix[i, 2], tmpname, ignore.case = TRUE)) {
@@ -129,6 +134,8 @@ matchName <- function(name, regex.matrix, firstname.pos, use.firstname, default)
       break
     }
   }
+  
+  
   # If we've not matched on honorific and gender package installed,
   #   attemp to match on first name.
   if (ret == default && use.firstname) {
@@ -185,11 +192,12 @@ transformTable <- function(honorifics)
   # Create 2 column matrix with a row for each gender.
   ret <- matrix(u, nrow=length(u), ncol=2)
   # Create list of honorifics for each gender.
-  x <- sapply(ret[, 2], function(x) h[h[, 2] == as.character(x), 1])
-  # Convert list to regular expressions of honorifics.
-  x <- sapply(x, function(x) mkExp(x))
-  # Set column 2 of return matrix to regular expressions of honorifics.
-  ret[,2] <- x
+  for(i in 1:nrow(ret)){
+    x <- h[h[, 2] == ret[i,1], 1]
+    # Transform list into regular expression.
+    x <- mkExp(x)
+    ret[i,2] <- x
+  }
   return (ret)
 }
 
