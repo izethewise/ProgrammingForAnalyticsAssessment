@@ -77,7 +77,7 @@ getGender <- function(name, honorifics = default.honorifics,
       )
     )
   )
-  }
+}
 
 
 #  Default list of honorifics.
