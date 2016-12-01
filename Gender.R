@@ -86,9 +86,9 @@ m <- c("Mr",      "male",
        "Miss",    "female",
        "Ms",      "female",
        "Mrs",     "female",
-       "Sig",    "male",
+       "Sig",     "male",
        "Mme",     "female",
-       "Rev",    "male",
+       "Rev",     "male",
        "Mlle",    "female",
        "Dona",    "female",
        "Sir",     "male",
@@ -134,14 +134,11 @@ matchName <- function(name, regex.matrix, firstname.pos, use.firstname, default)
       break
     }
   }
-  
-  
   # If we've not matched on honorific and gender package installed,
   #   attemp to match on first name.
   if (ret == default && use.firstname) {
     ret <- matchFirstname(tmpname, firstname.pos, default)
   }
-  # When finished iterating loop, return return variable.
   return (as.character(ret))
 }
 
